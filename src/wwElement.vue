@@ -1,0 +1,193 @@
+<template>
+  <div class="segmented-control">
+    <div class="segmented-control__track" :style="trackStyles">
+      <div class="segmented-control__options">
+        <div class="segmented-control__pill" :style="pillStyles"></div>
+        <button
+          v-for="(option, index) in options"
+          :key="option.value ?? index"
+          class="segmented-control__option"
+          :class="{ 'segmented-control__option--active': isActive(option) }"
+          :style="getOptionStyles(option)"
+          @click="handleSelect(option)"
+        >
+          <svg
+            v-if="showCheckmark && isActive(option)"
+            class="segmented-control__check"
+            viewBox="0 0 16 16"
+            width="14"
+            height="14"
+            fill="none"
+          >
+            <path
+              d="M3 8.5L6.5 12L13 4"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <i
+            v-else-if="showIcons && option.icon"
+            :class="option.icon"
+            class="segmented-control__icon"
+          ></i>
+          <span v-if="option.label" class="segmented-control__label">{{ option.label }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, watch } from 'vue';
+
+const props = defineProps({
+  content: { type: Object, required: true },
+  uid: { type: String, required: true },
+  /* wwEditor:start */
+  wwEditorState: { type: Object },
+  /* wwEditor:end */
+});
+
+const emit = defineEmits(['trigger-event']);
+
+// Props with optional chaining + fallback defaults
+const options = computed(() => props.content?.options ?? [
+  { label: 'Light', icon: '', value: 'light' },
+  { label: 'Dark', icon: '', value: 'dark' },
+  { label: 'Device', icon: '', value: 'device' },
+]);
+
+const pillColor = computed(() => props.content?.pillColor ?? '#4A6CF7');
+const activeTextColor = computed(() => props.content?.activeTextColor ?? '#FFFFFF');
+const inactiveTextColor = computed(() => props.content?.inactiveTextColor ?? '#64748B');
+const backgroundColor = computed(() => props.content?.backgroundColor ?? '#F1F5F9');
+const showCheckmark = computed(() => props.content?.showCheckmark ?? true);
+const showIcons = computed(() => props.content?.showIcons ?? true);
+const borderRadius = computed(() => props.content?.borderRadius ?? '999px');
+const gap = computed(() => props.content?.gap ?? '4px');
+
+// Internal state for uncontrolled mode
+const internalValue = ref(null);
+
+// Sync when external value changes
+watch(
+  () => props.content?.value,
+  (newVal) => {
+    if (newVal !== undefined && newVal !== null) {
+      internalValue.value = newVal;
+    }
+  },
+  { immediate: true },
+);
+
+const activeValue = computed(() => internalValue.value ?? options.value[0]?.value);
+
+const selectedIndex = computed(() => {
+  const idx = options.value.findIndex((opt) => opt.value === activeValue.value);
+  return idx >= 0 ? idx : 0;
+});
+
+function isActive(option) {
+  return option.value === activeValue.value;
+}
+
+function handleSelect(option) {
+  internalValue.value = option.value;
+  emit('trigger-event', {
+    name: 'change:option',
+    event: { value: option.value },
+  });
+}
+
+// Computed styles
+const trackStyles = computed(() => ({
+  backgroundColor: backgroundColor.value,
+  borderRadius: borderRadius.value,
+  padding: gap.value,
+}));
+
+const pillStyles = computed(() => {
+  const count = options.value.length;
+  if (count === 0) return { opacity: '0' };
+  const widthPercent = 100 / count;
+  return {
+    width: `${widthPercent}%`,
+    transform: `translateX(${selectedIndex.value * 100}%)`,
+    backgroundColor: pillColor.value,
+    borderRadius: `calc(${borderRadius.value} - ${gap.value})`,
+  };
+});
+
+function getOptionStyles(option) {
+  return {
+    color: isActive(option) ? activeTextColor.value : inactiveTextColor.value,
+  };
+}
+</script>
+
+<style lang="scss" scoped>
+.segmented-control {
+  // Never style root — WeWeb overrides inline styles
+
+  &__track {
+    display: inline-flex;
+    width: 100%;
+  }
+
+  &__options {
+    display: flex;
+    position: relative;
+    width: 100%;
+  }
+
+  &__pill {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    transition: transform 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    pointer-events: none;
+  }
+
+  &__option {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: color 0.2s ease;
+    font-family: inherit;
+
+    &:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: -2px;
+      border-radius: inherit;
+    }
+  }
+
+  &__check {
+    flex-shrink: 0;
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    font-size: 14px;
+  }
+
+  &__label {
+    line-height: 1;
+  }
+}
+</style>
