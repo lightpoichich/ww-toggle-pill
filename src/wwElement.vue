@@ -31,11 +31,11 @@
               stroke-linejoin="round"
             />
           </svg>
-          <i
-            v-else-if="showIcons && option.icon"
-            :class="option.icon"
+          <span
+            v-else-if="showIcons && option.icon && iconSvgs[option.icon]"
             class="segmented-control__icon"
-          ></i>
+            v-html="iconSvgs[option.icon]"
+          ></span>
           <span v-if="option.label" class="segmented-control__label">{{ option.label }}</span>
         </button>
       </div>
@@ -44,7 +44,7 @@
 </template>
 
 <script setup>
-import { computed, watch } from 'vue';
+import { computed, watch, reactive } from 'vue';
 
 const props = defineProps({
   content: { type: Object, required: true },
@@ -69,6 +69,26 @@ const options = computed(() => {
     value: opt?.value ?? `option-${i}`,
   }));
 });
+
+// Async icon resolution via SystemIcon SVG system
+const { getIcon } = wwLib.useIcons();
+const iconSvgs = reactive({});
+
+watch(
+  () => options.value.map((opt) => opt.icon),
+  async (icons) => {
+    for (const icon of icons) {
+      if (icon && !iconSvgs[icon]) {
+        try {
+          iconSvgs[icon] = await getIcon(icon);
+        } catch {
+          iconSvgs[icon] = null;
+        }
+      }
+    }
+  },
+  { immediate: true },
+);
 
 const pillColor = computed(() => props.content?.pillColor ?? '#4A6CF7');
 const activeTextColor = computed(() => props.content?.activeTextColor ?? '#FFFFFF');
@@ -232,7 +252,13 @@ function getOptionStyles(option) {
 
   &__icon {
     flex-shrink: 0;
-    font-size: 14px;
+    display: flex;
+    align-items: center;
+
+    :deep(svg) {
+      width: 1em;
+      height: 1em;
+    }
   }
 
   &__label {

@@ -38,7 +38,7 @@ export default {
               },
               icon: {
                 label: { en: 'Icon' },
-                type: 'Icon',
+                type: 'SystemIcon',
               },
               value: {
                 label: { en: 'Value' },
