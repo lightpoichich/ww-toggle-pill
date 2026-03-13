@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { computed, watch } from 'vue';
 
 const props = defineProps({
   content: { type: Object, required: true },
@@ -68,21 +68,26 @@ const showIcons = computed(() => props.content?.showIcons ?? true);
 const borderRadius = computed(() => props.content?.borderRadius ?? '999px');
 const gap = computed(() => props.content?.gap ?? '4px');
 
-// Internal state for uncontrolled mode
-const internalValue = ref(null);
+// MANDATORY: Expose selected value as component variable for NoCode users
+const { value: selectedValue, setValue: setSelectedValue } = wwLib.wwVariable.useComponentVariable({
+  uid: props.uid,
+  name: 'value',
+  type: 'string',
+  defaultValue: computed(() => props.content?.initialValue ?? options.value[0]?.value ?? ''),
+});
 
-// Sync when external value changes
+// Sync when initialValue changes
 watch(
-  () => props.content?.value,
+  () => props.content?.initialValue,
   (newVal) => {
     if (newVal !== undefined && newVal !== null) {
-      internalValue.value = newVal;
+      setSelectedValue(newVal);
     }
   },
   { immediate: true },
 );
 
-const activeValue = computed(() => internalValue.value ?? options.value[0]?.value);
+const activeValue = computed(() => selectedValue.value ?? options.value[0]?.value);
 
 const selectedIndex = computed(() => {
   const idx = options.value.findIndex((opt) => opt.value === activeValue.value);
@@ -94,7 +99,7 @@ function isActive(option) {
 }
 
 function handleSelect(option) {
-  internalValue.value = option.value;
+  setSelectedValue(option.value);
   emit('trigger-event', {
     name: 'change:option',
     event: { value: option.value },

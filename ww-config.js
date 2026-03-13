@@ -49,8 +49,8 @@ export default {
       },
       /* wwEditor:end */
     },
-    value: {
-      label: { en: 'Selected value' },
+    initialValue: {
+      label: { en: 'Initial value' },
       type: 'Text',
       section: 'settings',
       defaultValue: 'light',
