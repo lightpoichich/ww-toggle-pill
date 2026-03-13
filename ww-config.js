@@ -109,5 +109,37 @@ export default {
       section: 'style',
       defaultValue: '4px',
     },
+    fontSize: {
+      label: { en: 'Font size' },
+      type: 'Length',
+      section: 'style',
+      defaultValue: '14px',
+    },
+    fontWeight: {
+      label: { en: 'Font weight' },
+      type: 'TextSelect',
+      section: 'style',
+      defaultValue: '500',
+      options: {
+        options: [
+          { value: '400', label: { en: 'Normal' } },
+          { value: '500', label: { en: 'Medium' } },
+          { value: '600', label: { en: 'Semibold' } },
+          { value: '700', label: { en: 'Bold' } },
+        ],
+      },
+    },
+    optionPadding: {
+      label: { en: 'Option padding' },
+      type: 'Length',
+      section: 'style',
+      defaultValue: '8px 16px',
+    },
+    pillShadow: {
+      label: { en: 'Pill shadow' },
+      type: 'OnOff',
+      section: 'style',
+      defaultValue: true,
+    },
   },
 };

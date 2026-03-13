@@ -67,6 +67,10 @@ const showCheckmark = computed(() => props.content?.showCheckmark ?? true);
 const showIcons = computed(() => props.content?.showIcons ?? true);
 const borderRadius = computed(() => props.content?.borderRadius ?? '999px');
 const gap = computed(() => props.content?.gap ?? '4px');
+const fontSize = computed(() => props.content?.fontSize ?? '14px');
+const fontWeight = computed(() => props.content?.fontWeight ?? '500');
+const optionPadding = computed(() => props.content?.optionPadding ?? '8px 16px');
+const pillShadow = computed(() => props.content?.pillShadow ?? true);
 
 // MANDATORY: Expose selected value as component variable for NoCode users
 const { value: selectedValue, setValue: setSelectedValue } = wwLib.wwVariable.useComponentVariable({
@@ -122,12 +126,16 @@ const pillStyles = computed(() => {
     transform: `translateX(${selectedIndex.value * 100}%)`,
     backgroundColor: pillColor.value,
     borderRadius: `calc(${borderRadius.value} - ${gap.value})`,
+    boxShadow: pillShadow.value ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none',
   };
 });
 
 function getOptionStyles(option) {
   return {
     color: isActive(option) ? activeTextColor.value : inactiveTextColor.value,
+    fontSize: fontSize.value,
+    fontWeight: fontWeight.value,
+    padding: optionPadding.value,
   };
 }
 </script>
@@ -153,7 +161,6 @@ function getOptionStyles(option) {
     bottom: 0;
     left: 0;
     transition: transform 0.3s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     pointer-events: none;
   }
 
@@ -165,12 +172,9 @@ function getOptionStyles(option) {
     align-items: center;
     justify-content: center;
     gap: 6px;
-    padding: 8px 16px;
     border: none;
     background: transparent;
     cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
     white-space: nowrap;
     transition: color 0.2s ease;
     font-family: inherit;
