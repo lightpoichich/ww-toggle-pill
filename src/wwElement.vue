@@ -57,11 +57,18 @@ const props = defineProps({
 const emit = defineEmits(['trigger-event']);
 
 // Props with optional chaining + fallback defaults
-const options = computed(() => props.content?.options ?? [
-  { label: 'Light', icon: '', value: 'light' },
-  { label: 'Dark', icon: '', value: 'dark' },
-  { label: 'Device', icon: '', value: 'device' },
-]);
+const options = computed(() => {
+  const raw = props.content?.options ?? [
+    { label: 'Light', icon: '', value: 'light' },
+    { label: 'Dark', icon: '', value: 'dark' },
+    { label: 'Device', icon: '', value: 'device' },
+  ];
+  return raw.map((opt, i) => ({
+    label: opt?.label ?? `Option ${i + 1}`,
+    icon: opt?.icon ?? '',
+    value: opt?.value ?? `option-${i}`,
+  }));
+});
 
 const pillColor = computed(() => props.content?.pillColor ?? '#4A6CF7');
 const activeTextColor = computed(() => props.content?.activeTextColor ?? '#FFFFFF');

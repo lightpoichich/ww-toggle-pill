@@ -28,17 +28,23 @@ export default {
           return item.label || `Option ${index + 1}`;
         },
         item: {
-          label: {
-            label: { en: 'Label' },
-            type: 'Text',
-          },
-          icon: {
-            label: { en: 'Icon' },
-            type: 'Icon',
-          },
-          value: {
-            label: { en: 'Value' },
-            type: 'Text',
+          type: 'Object',
+          defaultValue: { label: 'New option', icon: '', value: '' },
+          options: {
+            item: {
+              label: {
+                label: { en: 'Label' },
+                type: 'Text',
+              },
+              icon: {
+                label: { en: 'Icon' },
+                type: 'Icon',
+              },
+              value: {
+                label: { en: 'Value' },
+                type: 'Text',
+              },
+            },
           },
         },
       },
