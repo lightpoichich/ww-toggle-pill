@@ -1,7 +1,7 @@
 <template>
   <div class="segmented-control">
     <div class="segmented-control__track" :style="trackStyles">
-      <div class="segmented-control__options" role="radiogroup">
+      <div class="segmented-control__options" role="radiogroup" :style="optionsStyles">
         <div class="segmented-control__pill" :style="pillStyles"></div>
         <button
           v-for="(option, index) in options"
@@ -171,6 +171,10 @@ function handleKeydown(event, index) {
 }
 
 // Computed styles
+const optionsStyles = computed(() => ({
+  gridTemplateColumns: `repeat(${options.value.length || 1}, 1fr)`,
+}));
+
 const trackStyles = computed(() => ({
   backgroundColor: backgroundColor.value,
   borderRadius: borderRadius.value,
@@ -210,7 +214,7 @@ function getOptionStyles(option) {
   }
 
   &__options {
-    display: flex;
+    display: grid;
     position: relative;
     width: 100%;
   }
@@ -225,7 +229,6 @@ function getOptionStyles(option) {
   }
 
   &__option {
-    flex: 1;
     position: relative;
     z-index: 1;
     display: flex;
@@ -236,6 +239,7 @@ function getOptionStyles(option) {
     background: transparent;
     cursor: pointer;
     white-space: nowrap;
+    overflow: hidden;
     transition: color 0.2s ease;
     font-family: inherit;
 
@@ -263,6 +267,8 @@ function getOptionStyles(option) {
 
   &__label {
     line-height: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 </style>
