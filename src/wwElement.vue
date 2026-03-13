@@ -1,7 +1,7 @@
 <template>
   <div class="segmented-control">
     <div class="segmented-control__track" :style="trackStyles">
-      <div class="segmented-control__options" role="radiogroup" :style="optionsStyles">
+      <div class="segmented-control__options" role="radiogroup">
         <div class="segmented-control__pill" :style="pillStyles"></div>
         <button
           v-for="(option, index) in options"
@@ -161,20 +161,15 @@ function handleKeydown(event, index) {
   if (newIndex >= 0) {
     const newOption = options.value[newIndex];
     handleSelect(newOption);
-    // Focus the new button — use nextTick to ensure DOM update
-    const track = event.target.closest('.segmented-control__options');
-    if (track) {
-      const buttons = track.querySelectorAll('.segmented-control__option');
+    const container = event.target.closest('.segmented-control__options');
+    if (container) {
+      const buttons = container.querySelectorAll('.segmented-control__option');
       buttons[newIndex]?.focus();
     }
   }
 }
 
 // Computed styles
-const optionsStyles = computed(() => ({
-  gridTemplateColumns: `repeat(${options.value.length || 1}, minmax(0, 1fr))`,
-}));
-
 const trackStyles = computed(() => ({
   backgroundColor: backgroundColor.value,
   borderRadius: borderRadius.value,
@@ -209,12 +204,11 @@ function getOptionStyles(option) {
   // Never style root — WeWeb overrides inline styles
 
   &__track {
-    display: inline-flex;
     width: 100%;
   }
 
   &__options {
-    display: grid;
+    display: flex;
     position: relative;
     width: 100%;
   }
@@ -229,19 +223,18 @@ function getOptionStyles(option) {
   }
 
   &__option {
+    flex: 1 1 0%;
+    min-width: 0;
     position: relative;
     z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    min-width: 0;
     border: none;
     background: transparent;
     cursor: pointer;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     transition: color 0.2s ease;
     font-family: inherit;
 
