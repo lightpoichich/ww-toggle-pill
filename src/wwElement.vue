@@ -172,7 +172,7 @@ function handleKeydown(event, index) {
 
 // Computed styles
 const optionsStyles = computed(() => ({
-  gridTemplateColumns: `repeat(${options.value.length || 1}, 1fr)`,
+  gridTemplateColumns: `repeat(${options.value.length || 1}, minmax(0, 1fr))`,
 }));
 
 const trackStyles = computed(() => ({
@@ -235,10 +235,13 @@ function getOptionStyles(option) {
     align-items: center;
     justify-content: center;
     gap: 6px;
+    min-width: 0;
     border: none;
     background: transparent;
     cursor: pointer;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     transition: color 0.2s ease;
     font-family: inherit;
 
