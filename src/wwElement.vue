@@ -1,7 +1,7 @@
 <template>
   <div class="segmented-control">
     <div class="segmented-control__track" :style="trackStyles">
-      <div class="segmented-control__options">
+      <div class="segmented-control__options" role="radiogroup">
         <div class="segmented-control__pill" :style="pillStyles"></div>
         <button
           v-for="(option, index) in options"
@@ -9,7 +9,11 @@
           class="segmented-control__option"
           :class="{ 'segmented-control__option--active': isActive(option) }"
           :style="getOptionStyles(option)"
+          role="radio"
+          :aria-checked="isActive(option)"
+          :aria-label="option.label"
           @click="handleSelect(option)"
+          @keydown="handleKeydown($event, index)"
         >
           <svg
             v-if="showCheckmark && isActive(option)"
@@ -108,6 +112,35 @@ function handleSelect(option) {
     name: 'change:option',
     event: { value: option.value },
   });
+}
+
+function handleKeydown(event, index) {
+  const count = options.value.length;
+  if (!count) return;
+  let newIndex = -1;
+  if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+    event.preventDefault();
+    newIndex = (index + 1) % count;
+  } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+    event.preventDefault();
+    newIndex = (index - 1 + count) % count;
+  } else if (event.key === 'Home') {
+    event.preventDefault();
+    newIndex = 0;
+  } else if (event.key === 'End') {
+    event.preventDefault();
+    newIndex = count - 1;
+  }
+  if (newIndex >= 0) {
+    const newOption = options.value[newIndex];
+    handleSelect(newOption);
+    // Focus the new button — use nextTick to ensure DOM update
+    const track = event.target.closest('.segmented-control__options');
+    if (track) {
+      const buttons = track.querySelectorAll('.segmented-control__option');
+      buttons[newIndex]?.focus();
+    }
+  }
 }
 
 // Computed styles
