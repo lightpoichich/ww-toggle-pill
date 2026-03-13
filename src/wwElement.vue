@@ -239,7 +239,6 @@ function getOptionStyles(option) {
     background: transparent;
     cursor: pointer;
     white-space: nowrap;
-    overflow: hidden;
     transition: color 0.2s ease;
     font-family: inherit;
 
@@ -267,8 +266,6 @@ function getOptionStyles(option) {
 
   &__label {
     line-height: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 }
 </style>
